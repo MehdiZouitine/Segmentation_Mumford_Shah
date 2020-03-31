@@ -1,0 +1,33 @@
+%% Classe du document
+\documentclass[a4paper, french, 12pt]{article}
+
+%% Import de tout les packages
+\input{tex/preambule}
+
+%% Import des nouvelles commandes
+\input{tex/commandes}
+
+%% Fin des réglages, début du document
+\begin{document}
+\input{tex/garde}
+\pagenumbering{Roman}
+%\input{tex/brouillon}
+%\newpage
+%\input{tex/resume}
+%\newpage
+\tableofcontents
+\newpage
+\pagenumbering{arabic}
+\input{tex/introduction}
+\newpage
+\input{tex/partie1}
+\newpage
+\input{tex/partie2}
+\newpage
+\input{tex/partie3}
+\newpage
+\input{tex/conclusion}
+\newpage
+\listoffigures
+\input{tex/bibliographie}
+\end{document}
