@@ -284,71 +284,30 @@ def H_eps_derivative(t: float, eps: float) -> float:
         return 0
 
 
-def grad_munford_shah(
-    phi: np.ndarray, u: np.ndarray, eps: float, omega: List[tuple]
+def grad_w_part(
+    w: np.ndarray, u: np.ndarray, omega: List[tuple], lambda_: float, mu: float
 ) -> np.ndarray:
 
-    """Short summary:
-
-        Function that compute the Munford-Shah fonctional gradient
-        (after chapter 6 transformation).
-
-    Parameters
-    ----------
-    phi : np.ndarray
-        Description of parameter `phi`.
-    u : np.ndarray
-        Description of parameter `u`.
-    eps : float
-        Description of parameter `eps`.
-    omega : List[tuple]
-        Description of parameter `omega`.
-
-    Returns
-    -------
-    np.ndarray
-        Description of returned object.
-
-    """
-
-    grad_phi = image_gradient(phi)
-
-    omega_frontier = get_frontier(u, omega, neighborhood_type="4_connex")
-
-    dim_phi = phi.shape
-
-    grad_munford = np.zeros(dim_phi)
-
-    perim_grad = np.zeros(dim_phi)
-
-    # Dans le cadre de la 4-connexité et de la variation totale le dl = 1
-    for m in range(phi.shape[0]):
-        for n in range(phi.shape[1]):
-
-            if (m, n) in omega:
-
-                omega_term = (
-                    grad_phi[0][m][n] ** 2 + grad_phi[1][m][n] ** 2
-                ) * H_eps_derivative(phi[m][n], eps)
-
+    image_size = w.shape
+    frontier = get_frontier(image=u, omega=omega, neighborhood_type="4_connex")
+    h1_term = np.zeros(image_size)
+    data_term = np.zeros(image_size)
+    w = np.pad(w, 1, mode="constant")
+    print(w)
+    for i in range(image_size[0]):
+        for j in range(image_size[1]):
+            if (i, j) in frontier:
+                h1_term[i, j] = -2 * (w[i + 1, j] + w[i, j + 1] - 2 * w[i, j])
             else:
+                h1_term[i, j] = 0
 
-                omega_term = 0
+            data_term[i, j] = 2 * (w[i, j] - u[i, j])
 
-            norm_term = 2 * (phi[m][n] - u[m][n])
-            grad_munford[m][n] = omega_term + norm_term
+    return lambda_ * h1_term + mu * data_term
 
-    for tuple1 in omega_frontier:
 
-        for tuple2 in omega_frontier:
-
-            grad_munford[tuple1[0]][tuple1[1]] += (
-                dl(tuple1, tuple2, omega_frontier)
-                * H_eps_derivative(phi[tuple1[0]][tuple1[1]], eps)
-                * (1 - 2 * H_eps(phi[tuple2[0]][tuple2[1]], eps))
-            )
-
-    return grad_munford
+def grad_phi_part():
+    return 0
 
 
 def gradient_descent(
