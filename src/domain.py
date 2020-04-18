@@ -22,41 +22,6 @@ def in_shape(img, pixel):
 sign = lambda x: math.copysign(1, x)  # two will work
 
 
-def munford_shah_fonctional(
-    u: np.ndarray, w: np.ndarray, omega: List[tuple], l: float, m: float,
-) -> float:
-
-    """Short summary:
-
-        Function that evals the Munford-Shah fonctional.
-
-    Parameters
-    ----------
-    u : np.ndarray
-        Description of parameter `u`.
-    w : np.ndarray
-        Description of parameter `w`.
-    omega : List[tuple]
-        Description of parameter `omega`.
-    l : float
-        Description of parameter `l`.
-    m : float
-        Description of parameter `m`.
-
-    Returns
-    -------
-    float
-        Description of returned object.
-
-    """
-
-    return (
-        get_perimeter(omega)
-        + l * np.sum(np.abs(image_gradient(w)) ** 2)
-        + m * np.linalg.norm(w - u, 2) ** 2
-    )
-
-
 def dl(pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[List]) -> int:
 
     """Short summary:
