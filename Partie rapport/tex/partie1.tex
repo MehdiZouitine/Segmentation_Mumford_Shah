@@ -1,0 +1,15 @@
+\section{Modèle théorique de Mumford Shah}
+
+Ce modèle est l'un des plus étudié. La fonctionnelle de Mumford-Shah a été introduite en 1989. D'un point de vue continue, une image est vue comme une fonction $g : \Omega \rightarrow \mathbb{R}$, où $\Omega$ est par exemple un rectangle, et $g$ associe à chaque point $x \in \Omega$ de l'image une valeur $g(x)$ qui représente un niveau de gris. La fonction g n'est pas régulière, elle est très souvent discontinue. C'est cet effet de discontinuité qui nous intéresse. En effet, nous voulons trouver pour une image $g : \Omega \rightarrow \mathbb{R}$ l'ensemble des contours des objets que représente l'image. Ces contours sont donc localisés aux points de discontinuités de g : il y a une franche discontinuité dans les niveaux de gris.
+
+Pour résoudre ce problème, Mumford et Shah introduisent une fonctionnelle qui par minimisation, va chercher les points de $g$ les plus discontinus.
+
+\bigskip
+
+Le problème s'écrit alors : 
+\[\underset{(u, K) \in \mathcal{A}(\Omega)}{min} \; \; \; J(u,K) := \int_{\Omega \backslash K} |u - g |^2 dx + \int_{\Omega \backslash K} ||\Delta u ||^2 dx + \mathcal{H}^1(K) ,  \]
+
+avec 
+\[ \mathcal{A} (\Omega) = \{ (u,K) : K \subset \Omega \; \; \; \text{est fermé et } \; \; \; u \in C^1(\Omega \backslash K) \} \] 
+
+Eventuellement expliciter chacun des termes. + existence ?
