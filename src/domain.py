@@ -1,5 +1,11 @@
-# Code de toutes les fonctions utiles au projet, histoire de pas tout foutre dans le notebook.
-from functional import *
+import numpy as np
+import math
+from typing import Union, Tuple, List, Dict
+import pandas as pd
+from tqdm import tqdm_notebook
+from itertools import combinations
+import matplotlib.pyplot as plt
+
 
 EPS = 0.1
 
@@ -109,15 +115,9 @@ def dl2(
         Description of returned object.
 
     """
-    w = np.pad(w, 1, mode="constant")
 
     # Pour le dl nous choisissons la variation total de fonction caracteristique de notre omega (On choisira pour ce cas d'usage la 4-connexité)
-    if (
-        (pixel1 in frontier)
-        and (pixel2 in frontier)
-        and (pixel1[0] != pixel2[0])
-        and (pixel1[1] != pixel2[1])
-    ):
+    if (pixel1 in frontier) and (pixel2 in frontier):
         partial_x = w[pixel1[0] + 1, pixel1[1]] - w[pixel1[0], pixel1[1]]
         partial_y = w[pixel1[0], pixel1[1] + 1] - w[pixel1[0], pixel1[1]]
 
@@ -218,15 +218,12 @@ def grad_w_part(
     h1_term = np.zeros(image_size)
     data_term = 2 * (w - u)
 
-    w = np.pad(w, 1, mode="constant")
+    w = np.pad(w, 1, mode="edge")
 
-    for pixel in frontier:
-        i = pixel[0]
-        j = pixel[1]
-        if ([i, j] not in frontier and [i + 1, j] not in frontier) and (
-            [i, j] not in frontier and [i, j + 1] not in frontier
-        ):
-            h1_term[i, j] = -2 * (w[i + 1, j] + w[i, j + 1] - 2 * w[i, j])
+    for i in range(image_size[0]):
+        for j in range(image_size[1]):
+            if [i, j] not in frontier:
+                h1_term[i, j] = -2 * (w[i + 1, j] + w[i, j + 1] - 2 * w[i, j])
 
     return lambda_ * h1_term + mu * data_term
 
@@ -254,7 +251,7 @@ def grad_phi_part(
         Description of returned object.
 
     """
-
+    w = np.pad(w, 1, mode="edge")
     omega_term = np.zeros(phi.shape)
     comb = combinations(omega_frontier, 2)
     for (tuple1, tuple2) in comb:
@@ -287,6 +284,7 @@ def get_frontier_phi(omega: List[List], phi: np.ndarray) -> List[List]:
     for pixel in omega:
         i = pixel[0]
         j = pixel[1]
+
         if (
             not in_shape(phi, (i + 1, j))
             or not in_shape(phi, (i, j + 1))
@@ -306,18 +304,16 @@ def get_frontier_phi(omega: List[List], phi: np.ndarray) -> List[List]:
 
 
 def gradient_descent(
-    phi_0: np.ndarray,
-    w0: np.ndarray,
     u: np.ndarray,
     step_w: float,
     step_phi: float,
-    trhld: float,
     eps: float,
     lambda_: float,
     mu: float,
     it: int,
     verbose: bool,
-) -> np.ndarray:
+    mode: str,
+) -> Dict[str, Union[np.ndarray, List]]:
 
     """Short summary:
 
@@ -325,18 +321,12 @@ def gradient_descent(
 
     Parameters
     ----------
-    phi_0 : np.ndarray
-        Description of parameter `phi_0`.
-    w0 : np.ndarray
-        Description of parameter `w0`.
     u : np.ndarray
         Description of parameter `u`.
     step_w : float
         Description of parameter `step_w`.
     step_phi : float
         Description of parameter `step_phi`.
-    trhld : float
-        Description of parameter `trhld`.
     eps : float
         Description of parameter `eps`.
     lambda_ : float
@@ -347,32 +337,45 @@ def gradient_descent(
         Description of parameter `it`.
     verbose : bool
         Description of parameter `verbose`.
+    mode : str
+        Description of parameter `mode`.
 
     Returns
     -------
-    np.ndarray
+    Dict[str,Union[np.ndarray,List]]
         Description of returned object.
 
     """
 
-    phi = phi_0
+    phi = np.random.uniform(-1, 1, u.shape)
     positive_part = np.argwhere(phi >= 0).tolist()
     frontier = get_frontier_phi(omega=positive_part, phi=phi)
-    w = w0
-    i = 0
-    for i in tqdm_notebook(range(it)):
-        print(len(frontier))
-        grad_w = grad_w_part(w, u, frontier, lambda_, mu)
-        w = w + step_w * grad_w
+    norm_grad_phi = []
+    norm_grad_w = []
+    w = u
 
-        grad_phi = grad_phi_part(phi=phi, w=w, omega_frontier=frontier, eps=eps)
-        phi = phi + step_phi * grad_phi
+    if mode == "standard":
+        for i in range(it):
+            print(f"itération {i}/{it}")
+            grad_w = grad_w_part(w, u, frontier, lambda_, mu)
+            w = w + step_w * grad_w
 
-        positive_part = np.argwhere(phi >= 0).tolist()
-        frontier = get_frontier_phi(omega=positive_part, phi=phi)
+            grad_phi = grad_phi_part(phi=phi, w=w, omega_frontier=frontier, eps=eps)
+            phi = phi + step_phi * grad_phi
 
-        if verbose:
-            print(f"diff de w : {np.linalg.norm(w - u, 2) ** 2}")
-            print(f"Gradient de phi : {np.linalg.norm(grad_phi)}")
+            positive_part = np.argwhere(phi >= 0).tolist()
+            frontier = get_frontier_phi(omega=positive_part, phi=phi)
 
-    return w, phi, frontier
+            norm_grad_phi.append(np.linalg.norm(grad_phi))
+            norm_grad_w.append(np.linalg.norm(grad_w))
+            if verbose:
+                print(f"itération {i} : w gradient: {norm_grad_w[-1]}")
+                print(f"itération {i} : phi gradient: {norm_grad_phi[-1]}")
+
+    return {
+        "w": w,
+        "phi": phi,
+        "frontier": frontier,
+        "norm_grad_phi": norm_grad_phi,
+        "norm_grad_w": norm_grad_w,
+    }
