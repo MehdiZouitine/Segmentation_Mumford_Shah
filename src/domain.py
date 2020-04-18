@@ -256,13 +256,13 @@ def grad_phi_part(
     """
 
     omega_term = np.zeros(phi.shape)
-    for tuple1 in omega_frontier:
-        for tuple2 in omega_frontier:
-            omega_term[tuple1[0]][tuple1[1]] += (
-                dl2(tuple1, tuple2, omega_frontier, w)
-                * H_eps_derivative(phi[tuple1[0], tuple1[1]], eps)
-                * (1 - 2 * H_eps(phi[tuple2[0], tuple2[1]], eps))
-            )
+    comb = combinations(omega_frontier, 2)
+    for (tuple1, tuple2) in comb:
+        omega_term[tuple1[0]][tuple1[1]] += (
+            dl2(tuple1, tuple2, omega_frontier, w)
+            * H_eps_derivative(phi[tuple1[0], tuple1[1]], eps)
+            * (1 - 2 * H_eps(phi[tuple2[0], tuple2[1]], eps))
+        )
     return omega_term
 
 
