@@ -4,7 +4,9 @@ On veut minimiser en $\Omega \subset \{1,...,N\}^2$ et en $w \in \mathbb{R}^{N^2
 
 \[ P(\Omega) + \lambda \sum \limits_{\underset{((m,n), (m, n+1)) \notin \partial \Omega}{\underset{((m,n),(m+1, n)) \notin \partial \Omega}{m,n = 1}}}^{N} |\nabla w_{m,n}|^2 + \mu ||w - u ||_2^2 \]
 
-où $\lambda \geq 0$, $\mu \geq 0$ sont des paramètres et $u \in \mathbb{R}^{N^2}$ est l'image à segmenter. Pour cela, on va utiliser un algorithme de descente sur $\Omega$ et $w$. \\
+où $\lambda \geq 0$, $\mu \geq 0$ sont des paramètres et $u \in \mathbb{R}^{N^2}$ est l'image à segmenter. Pour cela, on va utiliser un algorithme de descente sur $\Omega$ et $w$.
+
+\bigskip
 
 Le premier terme de la somme est très proche d'un terme $H^1$, sauf que l'on retire de la somme les points dont le calcul du gradient fait intervenir un voisin de l'autre côté de la frontière de $\Omega$. Ainsi, les points qui ont un très fort gradient tendent à appartenir à la frontière. Le dernier terme constitue l'attache au données. 
 \subsection{Notion de périmètre}
@@ -34,13 +36,22 @@ Où $ dl((m,n),(m',n')) > 0$ sont des éléments de longueur. Plus la frontière
 On suppose aussi que 
 \[ \text{si} \; (m',n') \notin \sigma (m,n) \; \; \; \text{alors} \; \; dl((m,n),(m',n')) = 0\]
 
-Pour optimiser $\Omega$, on va procéder par des ensemble de niveau. 
-\subsubsection{Représentation de $\Omega$}
+Pour optimiser $\Omega$, on va procéder par des ensemble de niveau.
+ 
+\subsubsection{Représentation de \texorpdfstring{$\Omega$}{Lg}}
+
 Les méthodes basées sur les ensembles de niveaux représentent l'ensemble $\Omega \subset \{1,...N\}^2$ comme un ensemble de niveau d'une image $\phi \in \mathcal{R}^{N^2}$. On pose donc 
 
 \[ \Omega = \{ (m,n) \in \{1,...,N \}^2, \phi_{m,n} \geq 0 \} \].
+<<<<<<< HEAD
 \subsubsection{Evolution de $\Omega$}
 Ainsi, faire évoluer $\Omega$ revient à faire évoluer l'image $\phi$ pour minimiser une énergie analogue mais portant sur $\phi$. On applique un algorithme de gradient à la fonctionelle. On peut donc construire une énergie en $\phi$ tel que : 
+=======
+
+\subsubsection{Evolution de \texorpdfstring{$\Omega$}{Lg}}
+
+Ainsi, faire évoluer $\Omega$ revient à faire évoluer l'image $\phi$ pour minimiser une énergie analogue mais portant sur $\phi$. On applique un algorithme de gradient à la fonctionelle. On peut donc construire une énergie en $\phi$  pour le terme correspondant au  périmètre tel que : 
+>>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 
 \[ E ((\phi_{m,n})_{1 \leq m,n \leq N}) = \sum \limits_{m,n = 0}^N  \sum \limits_{m',n' = 0}^N  dl((m,n),(m',n')) H_{\epsilon} (\phi_{m,n}) ( 1 - H_{\epsilon}(\phi_{m',n'})) \] 
 Avec 
@@ -61,11 +72,20 @@ Avec
 \end{matrix} \right. \] 
 
 
+<<<<<<< HEAD
 Ainsi, on combine alors une étape de minimisation d'une énergie sur w, puis d'une étape d'optimisation de la forme $\Omega$. 
+=======
+Ainsi, on combine alors une étape de minimisation d'une énergie sur w, puis d'une étape d'optimisation de la forme $\Omega$, en utilisant un algorithme de descente de gradient. 
+
+>>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 \subsection{Convergence de l'algorithme}
 \subsection{Implémentation numérique et résultats}
 
+<<<<<<< HEAD
 Nous allons donc implémenter différentes fonctions pour pouvoir utiliser un algorithme de descente à la fois sur l'image à segmenter et sur la forme $\phi$ (image). \\
+=======
+\subsubsection{Optimisation de \texorpdfstring{$P(\Omega)$}{Lg}}
+>>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 
 Fonction à présenter ? 
 
