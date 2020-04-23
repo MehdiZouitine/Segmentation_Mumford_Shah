@@ -9,7 +9,9 @@ où $\lambda \geq 0$, $\mu \geq 0$ sont des paramètres et $u \in \mathbb{R}^{N^
 \bigskip
 
 Le premier terme de la somme est très proche d'un terme $H^1$, sauf que l'on retire de la somme les points dont le calcul du gradient fait intervenir un voisin de l'autre côté de la frontière de $\Omega$. Ainsi, les points qui ont un très fort gradient tendent à appartenir à la frontière. Le dernier terme constitue l'attache au données. 
+
 \subsection{Notion de périmètre}
+
 On veut minimiser le terme correspondant au périmètre de $\Omega$. Pour définir ce périmètre, on considère un système de voisinage $\delta(m,n)$ de chaque pixel $(m,n) \in \{1,...,N\}^2$. Les voisinages les plus utilisés sont la 4-connexité définie comme ci dessous :
 
 \[ \sigma (m,n) = \{ (m',n') \in  \{1,...,N\}^2, |m - m' | + |n - n'| = 1 \}\]
@@ -18,7 +20,7 @@ Ou la 8-connexité définie comme ci dessous :
 
 \begin{figure}[H]
 \centering
-\includegraphics[scale=1]{Connexite.png}
+\includegraphics[scale=1]{images/Connexite.png}
 \caption{4-connexité et 8-connexité \newline  https://ensiwiki.ensimag.fr/index.php?title=Fichier:Connexite.png}
 \end{figure}
 
@@ -43,15 +45,10 @@ Pour optimiser $\Omega$, on va procéder par des ensemble de niveau.
 Les méthodes basées sur les ensembles de niveaux représentent l'ensemble $\Omega \subset \{1,...N\}^2$ comme un ensemble de niveau d'une image $\phi \in \mathcal{R}^{N^2}$. On pose donc 
 
 \[ \Omega = \{ (m,n) \in \{1,...,N \}^2, \phi_{m,n} \geq 0 \} \].
-<<<<<<< HEAD
-\subsubsection{Evolution de $\Omega$}
-Ainsi, faire évoluer $\Omega$ revient à faire évoluer l'image $\phi$ pour minimiser une énergie analogue mais portant sur $\phi$. On applique un algorithme de gradient à la fonctionelle. On peut donc construire une énergie en $\phi$ tel que : 
-=======
 
 \subsubsection{Evolution de \texorpdfstring{$\Omega$}{Lg}}
 
 Ainsi, faire évoluer $\Omega$ revient à faire évoluer l'image $\phi$ pour minimiser une énergie analogue mais portant sur $\phi$. On applique un algorithme de gradient à la fonctionelle. On peut donc construire une énergie en $\phi$  pour le terme correspondant au  périmètre tel que : 
->>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 
 \[ E ((\phi_{m,n})_{1 \leq m,n \leq N}) = \sum \limits_{m,n = 0}^N  \sum \limits_{m',n' = 0}^N  dl((m,n),(m',n')) H_{\epsilon} (\phi_{m,n}) ( 1 - H_{\epsilon}(\phi_{m',n'})) \] 
 Avec 
@@ -71,21 +68,16 @@ Avec
 0 & \text{si} t \leq - \epsilon 
 \end{matrix} \right. \] 
 
-
-<<<<<<< HEAD
-Ainsi, on combine alors une étape de minimisation d'une énergie sur w, puis d'une étape d'optimisation de la forme $\Omega$. 
-=======
 Ainsi, on combine alors une étape de minimisation d'une énergie sur w, puis d'une étape d'optimisation de la forme $\Omega$, en utilisant un algorithme de descente de gradient. 
 
->>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 \subsection{Convergence de l'algorithme}
 \subsection{Implémentation numérique et résultats}
 
-<<<<<<< HEAD
-Nous allons donc implémenter différentes fonctions pour pouvoir utiliser un algorithme de descente à la fois sur l'image à segmenter et sur la forme $\phi$ (image). \\
-=======
+Nous allons donc implémenter différentes fonctions pour pouvoir utiliser un algorithme de descente à la fois sur l'image à segmenter et sur la forme $\phi$ (image).
+
+\bigskip
+
 \subsubsection{Optimisation de \texorpdfstring{$P(\Omega)$}{Lg}}
->>>>>>> 84bb3f8488d143efd90ae11cd2ca035e88a54838
 
 Fonction à présenter ? 
 
