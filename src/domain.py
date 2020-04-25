@@ -272,7 +272,7 @@ def grad_w_part(
         Description of returned object.
 
     """
-    #image_size = w.shape
+    image_size = w.shape
 
     #h1_term = np.zeros(image_size)
     data_term = 2 * (w - u)
