@@ -3,9 +3,19 @@ La segmentation d'images est l'un des grands domaines du traitement d'images et 
 
 \bigskip
 
-La segmentation est notamment utilisée pour simplifier ou changer la représentation d'une image en quelque chose de plus facile à analyser. On l'utilise beaucoup en imagerie médicale, dans la recherche d'image par contenu, dans la détection d'objet, la reconnaissance faciale (doigts et iris également), en vidéo surveillance...
+La segmentation est notamment utilisée pour simplifier ou changer la représentation d'une image en quelque chose de plus facile à analyser. On l'utilise beaucoup en imagerie médicale, dans la recherche d'image par contenu, dans la détection d'objet, la reconnaissance faciale (doigts et iris également), en vidéo surveillance, ...
 
-- Image à ajouter pour exemple 
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{images/imagerie.png}
+\caption{Segmentation en imagerie médicale pour déceler des tumeurs}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.4]{images/segmentation.png}
+\caption{Segmentation d'objets}
+\end{figure}
 
 \bigskip
 
@@ -13,12 +23,11 @@ L'homme sait naturellement séparer des objets dans une image, grâce à la comp
 mais la construction d'algorithme de segmentation de haut niveau représente un grand domaine de recherche dans le traitement d'image. 
 Il existe 3 grandes classes de segmentation aujourd'hui :
 \begin{itemize}
-\item La segmentation fondée sur les régions,
-\item La segmentation fondée sur les contours,
-\item La segmentation fondée sur la classification/seuillage de pixels.
+\item la segmentation fondée sur les régions,
+\item la segmentation fondée sur les contours,
+\item la segmentation fondée sur la classification/seuillage de pixels.
 \end{itemize}
 
 
 Dans ce projet, nous utilisons la méthode des contours avec le modèle de Mumford-Shah.
 
-test test 

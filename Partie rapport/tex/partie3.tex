@@ -1,0 +1,20 @@
+\section{Implémentation numérique}
+
+\subsection{Convergence de l'algorithme}
+?
+
+\subsection{Implémentation numérique et résultats}
+
+Nous allons donc implémenter différentes fonctions pour pouvoir utiliser un algorithme de descente à la fois sur l'image à segmenter et sur la forme $\phi$ (image).
+
+\bigskip
+
+\subsubsection{Optimisation de \texorpdfstring{$P(\Omega)$}{Lg}}
+
+Fonction à présenter ? 
+
+En ce qui concerne l'algorithme de descente , on peut soit utiliser un pas constant  ou implémenter la règle d'Armijo pour ce pas : choisir i comme étant le plus petit entier tel que : 
+
+\[ E(x^k) - E(x^k - t_i \nabla E(w^k)) \geq \sigma t_i || \nabla E(w^k)||_2^2\] 
+
+avec $E$ la fonctionnelle à minimiser et $\sigma \in ]0,1[$. 
