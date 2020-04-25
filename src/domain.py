@@ -272,7 +272,7 @@ def grad_w_part(
         Description of returned object.
 
     """
-    image_size = w.shape
+    #image_size = w.shape
 
     #h1_term = np.zeros(image_size)
     data_term = 2 * (w - u)
@@ -284,6 +284,10 @@ def grad_w_part(
     grad = 2 * (tmpx1 + tmpy1)
     
     return lambda_ * grad + mu * data_term
+
+
+
+
 
 
 def get_neighbour(pixel, img):
