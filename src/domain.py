@@ -182,6 +182,69 @@ def all_not_cross_frontier(pixel, phi):
     return True
 
 
+
+
+
+def grad_x(img, adjoint):            
+    sx , sy = np.shape(img)
+    diff_x = np.copy(img)
+    
+    if adjoint==0:                  #calcule Dx img i.e. la composante selon x de grad(img)
+        for x in range(sx):
+            if x==sx-1:         #image périodique en dehors du support
+                xnext=0
+            else:
+                xnext=x+1
+            for y in range(sy):
+                diff_x[x,y] = img[xnext,y]- img[x,y]
+    else:                          #ou son adjoint ('adjoint'!=0)
+        for x in range(sx):
+            if x==0:
+                xprev=sx-1
+            else:
+                xprev=x-1
+            for y in range(sy):
+                diff_x[x,y] = img[xprev,y]- img[x,y]
+    
+    return diff_x
+
+    
+def grad_y(img, adjoint):              #pareil que pour x mais sur les colonnes
+    sx , sy = np.shape(img)
+    diff_y =  np.copy(img)
+
+    if adjoint==0:
+       
+        for y in range(sy):
+            if y==sy-1:
+                ynext=0
+            else:
+                ynext=y+1
+            for x in range(sx):
+                diff_y[x,y] = img[x,ynext]- img[x,y]
+    else:
+        for y in range(sy):
+            if y==0:
+                yprev=sy-1
+            else:
+                yprev=y-1
+            for x in range(sx):
+                diff_y[x,y] = img[x,yprev]- img[x,y]
+    
+    return diff_y
+
+
+
+
+
+
+
+
+
+
+
+
+
 def grad_w_part(
     w: np.ndarray, u: np.ndarray, lambda_: float, mu: float, phi: np.ndarray,
 ) -> np.ndarray:
@@ -212,18 +275,16 @@ def grad_w_part(
 
     image_size = w.shape
 
-    h1_term = np.zeros(image_size)
-    w_tmp = np.copy(w)
-    data_term = 2 * (w_tmp - u)
-
-    w = np.pad(w, 1, mode="edge")
-    exist = False
-    for i in range(image_size[0]):
-        for j in range(image_size[1]):
-            if all_not_cross_frontier([i, j], phi):
-                h1_term[i, j] = -2 * (w[i + 1, j] + w[i, j + 1] - 2 * w[i, j])
-
-    return lambda_ * h1_term + mu * data_term
+    #h1_term = np.zeros(image_size)
+    data_term = 2 * (w - u)
+    tmpx = grad_x(w,0)
+    tmpx1 = grad_x(tmpx,1)
+    tmpy = grad_y(w,0)
+    tmpy1 = grad_y(tmpy,1)
+    
+    grad = 2 * (tmpx1 + tmpy1)
+    
+    return lambda_ * grad + mu * data_term
 
 
 def get_neighbour(pixel, img):
@@ -371,6 +432,8 @@ def gradient_descent(
         Description of returned object.
 
     """
+    
+    #phi = np.copy(u) # + np.random.normal(0,1,u.shape)
     phi = test
     # phi = np.random.uniform(-1, 1, u.shape)
     omega = np.argwhere(phi >= 0).tolist()
@@ -387,7 +450,7 @@ def gradient_descent(
             w = w - (step_w * grad_w)
 
             grad_phi = grad_phi_part(phi=phi, w=w, omega_frontier=frontier, eps=eps)
-            phi = phi + step_phi * grad_phi
+            phi = phi - (step_phi * grad_phi)
 
             omega = np.argwhere(phi >= 0).tolist()
             frontier = get_frontier_phi(omega=omega, phi=phi)
