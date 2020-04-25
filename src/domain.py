@@ -81,7 +81,7 @@ def munford_shah(w, u, frontier):
 
 
 def dl2(
-    pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[tuple], w: np.ndarray
+    pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[tuple], w: np.ndarray, dx, dy
 ) -> float:
 
     """Short summary:
@@ -107,12 +107,13 @@ def dl2(
     """
 
     # Pour le dl nous choisissons la variation total de fonction caracteristique de notre omega (On choisira pour ce cas d'usage la 4-connexité)
-    if (pixel1 in frontier) and (pixel2 in frontier):
-        partial_x = w[pixel1[0] + 1, pixel1[1]] - w[pixel1[0], pixel1[1]]
-        partial_y = w[pixel1[0], pixel1[1] + 1] - w[pixel1[0], pixel1[1]]
+    # if (pixel1 in frontier) and (pixel2 in frontier):
 
-        return 1 - (partial_x ** 2 + partial_y ** 2)
-    return 0
+    partial_x = w[pixel1[0] + 1, pixel1[1]] - w[pixel1[0], pixel1[1]]
+    partial_y = w[pixel1[0], pixel1[1] + 1] - w[pixel1[0], pixel1[1]]
+
+    return (np.ones(w.shape) - (dx ** 2 + dy ** 2))[pixel1[0], pixel1[1]]
+    # return 0
 
 
 def H_eps(t: float, eps: float) -> float:
@@ -175,74 +176,60 @@ def H_eps_derivative(t: float, eps: float) -> float:
         return 0
 
 
-def all_not_cross_frontier(pixel, phi):
+def in_frontier(pixel, phi):
     for [i, j] in get_neighbour(pixel, phi):
-        if sign(phi[i, j]) == -sign(phi[pixel[0], pixel[1]]):
+        if sign(phi[i, j]) == sign(phi[pixel[0], pixel[1]]):
             return False
     return True
 
 
-
-
-
-def grad_x(img, adjoint):            
-    sx , sy = np.shape(img)
+def grad_x(img, adjoint):
+    sx, sy = np.shape(img)
     diff_x = np.copy(img)
-    
-    if adjoint==0:                  #calcule Dx img i.e. la composante selon x de grad(img)
+
+    if adjoint == 0:  # calcule Dx img i.e. la composante selon x de grad(img)
         for x in range(sx):
-            if x==sx-1:         #image périodique en dehors du support
-                xnext=0
+            if x == sx - 1:  # image périodique en dehors du support
+                xnext = 0
             else:
-                xnext=x+1
+                xnext = x + 1
             for y in range(sy):
-                diff_x[x,y] = img[xnext,y]- img[x,y]
-    else:                          #ou son adjoint ('adjoint'!=0)
+                diff_x[x, y] = img[xnext, y] - img[x, y]
+    else:  # ou son adjoint ('adjoint'!=0)
         for x in range(sx):
-            if x==0:
-                xprev=sx-1
+            if x == 0:
+                xprev = sx - 1
             else:
-                xprev=x-1
+                xprev = x - 1
             for y in range(sy):
-                diff_x[x,y] = img[xprev,y]- img[x,y]
-    
+                diff_x[x, y] = img[xprev, y] - img[x, y]
+
     return diff_x
 
-    
-def grad_y(img, adjoint):              #pareil que pour x mais sur les colonnes
-    sx , sy = np.shape(img)
-    diff_y =  np.copy(img)
 
-    if adjoint==0:
-       
+def grad_y(img, adjoint):  # pareil que pour x mais sur les colonnes
+    sx, sy = np.shape(img)
+    diff_y = np.copy(img)
+
+    if adjoint == 0:
+
         for y in range(sy):
-            if y==sy-1:
-                ynext=0
+            if y == sy - 1:
+                ynext = 0
             else:
-                ynext=y+1
+                ynext = y + 1
             for x in range(sx):
-                diff_y[x,y] = img[x,ynext]- img[x,y]
+                diff_y[x, y] = img[x, ynext] - img[x, y]
     else:
         for y in range(sy):
-            if y==0:
-                yprev=sy-1
+            if y == 0:
+                yprev = sy - 1
             else:
-                yprev=y-1
+                yprev = y - 1
             for x in range(sx):
-                diff_y[x,y] = img[x,yprev]- img[x,y]
-    
+                diff_y[x, y] = img[x, yprev] - img[x, y]
+
     return diff_y
-
-
-
-
-
-
-
-
-
-
-
 
 
 def grad_w_part(
@@ -275,15 +262,20 @@ def grad_w_part(
 
     image_size = w.shape
 
-    #h1_term = np.zeros(image_size)
+    # h1_term = np.zeros(image_size)
     data_term = 2 * (w - u)
-    tmpx = grad_x(w,0)
-    tmpx1 = grad_x(tmpx,1)
-    tmpy = grad_y(w,0)
-    tmpy1 = grad_y(tmpy,1)
-    
+    tmpx = grad_x(w, 0)
+    tmpx1 = grad_x(tmpx, 1)
+    tmpy = grad_y(w, 0)
+    tmpy1 = grad_y(tmpy, 1)
+
     grad = 2 * (tmpx1 + tmpy1)
-    
+
+    for i in range(grad.shape[0]):
+        for j in range(grad.shape[1]):
+            if in_frontier([i, j], phi):
+                grad[i, j] = 0
+
     return lambda_ * grad + mu * data_term
 
 
@@ -327,24 +319,19 @@ def grad_phi_part(
     size = phi.shape
     omega_term = np.zeros(size)
     w = np.pad(w, 1, mode="edge")
+    tmpx = grad_x(w, 0)
+    tmpx1 = grad_x(tmpx, 1)
+    tmpy = grad_y(w, 0)
+    tmpy1 = grad_y(tmpy, 1)
     for i in range(size[0]):
         for j in range(size[1]):
             for e in get_neighbour([i, j], phi):
                 omega_term[i, j] += (
-                    dl2([i, j], e, omega_frontier, w)
+                    dl2([i, j], e, omega_frontier, w, tmpx1, tmpy1)
                     * H_eps_derivative(phi[i, j], eps)
                     * (1 - 2 * H_eps(phi[e[0], e[1]], eps))
                 )
 
-    # comb = combinations(omega_frontier, 2)
-    # print(len(omega_frontier))
-    #
-    # for (tuple1, tuple2) in comb:
-    #     omega_term[tuple1[0]][tuple1[1]] += (
-    #         dl2(tuple1, tuple2, omega_frontier, w)
-    #         * H_eps_derivative(phi[tuple1[0], tuple1[1]], eps)
-    #         * (1 - 2 * H_eps(phi[tuple2[0], tuple2[1]], eps))
-    #     )
     return omega_term
 
 
@@ -432,9 +419,9 @@ def gradient_descent(
         Description of returned object.
 
     """
-    
-    #phi = np.copy(u) # + np.random.normal(0,1,u.shape)
-    phi = test
+
+    phi = np.copy(u)  # + np.random.normal(0,1,u.shape)
+    # phi = test
     # phi = np.random.uniform(-1, 1, u.shape)
     omega = np.argwhere(phi >= 0).tolist()
     frontier = get_frontier_phi(omega=omega, phi=phi)
@@ -454,6 +441,7 @@ def gradient_descent(
 
             omega = np.argwhere(phi >= 0).tolist()
             frontier = get_frontier_phi(omega=omega, phi=phi)
+            print(len(frontier))
 
             norm_grad_phi.append(np.linalg.norm(grad_phi))
             norm_grad_w.append(np.linalg.norm(grad_w))

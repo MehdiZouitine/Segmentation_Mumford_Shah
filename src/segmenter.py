@@ -27,7 +27,14 @@ class Segmenter:
         self.functional = result_optimiser["functional"]
 
     def plot_stats(self):
-        inter = np.copy(self.phi)
+        front = np.copy(self.phi)
+
+        for i in range(self.phi.shape[0]):
+            for j in range(self.phi.shape[1]):
+                if [i, j] in self.frontier:
+                    front[i, j] = 1
+                else:
+                    front[i, j] = 0
 
         for i in range(self.phi.shape[0]):
             for j in range(self.phi.shape[1]):
@@ -37,11 +44,11 @@ class Segmenter:
                     self.phi[i, j] = 0
 
         plt.imshow(self.phi)
-        plt.title("Frontier de la segmentation")
+        plt.title("phi")
         plt.show()
 
-        plt.imshow(inter)
-        plt.title("phi")
+        plt.imshow(front)
+        plt.title("frontier")
         plt.show()
 
         plt.plot(self.norm_grad_w)
