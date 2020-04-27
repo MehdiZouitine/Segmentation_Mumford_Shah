@@ -1,4 +1,4 @@
-from domain import *
+from function import *
 
 
 class Segmenter:
@@ -58,5 +58,5 @@ class Segmenter:
         plt.title("Gradient de omega")
         plt.show()
         plt.plot(self.functional)
-        plt.title("Munford Shah functional")
+        plt.title("Mumford Shah")
         plt.show()

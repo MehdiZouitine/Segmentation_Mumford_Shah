@@ -10,7 +10,24 @@ import matplotlib.pyplot as plt
 EPS = 0.1
 
 
-def in_shape(img, pixel):
+def in_shape(img: np.ndarray, pixel: List) -> bool:
+    """Short summary:
+        function that verifies if a pixel belongs to the image
+
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Description of parameter `img`.
+    pixel : List
+        Description of parameter `pixel`.
+
+    Returns
+    -------
+    bool
+        Description of returned object.
+
+    """
     return (
         pixel[0] > -1
         and pixel[0] < img.shape[0]
@@ -19,7 +36,22 @@ def in_shape(img, pixel):
     )
 
 
-sign = lambda x: math.copysign(1, x)  # two will work
+sign = lambda x: math.copysign(1, x)
+"""Short summary:
+
+    Fonction that return sign of a real number.
+
+Parameters
+----------
+x : float
+    Description of parameter `x`.
+
+Returns
+-------
+int
+    Description of returned object.
+
+"""
 
 
 def dl(pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[List]) -> int:
@@ -44,7 +76,6 @@ def dl(pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[List]) -> int:
 
     """
 
-    # Pour le dl nous choisissons la variation total de fonction caracteristique de notre omega (On choisira pour ce cas d'usage la 4-connexité)
     if (
         (pixel1 in frontier)
         and (pixel2 in frontier)
@@ -55,11 +86,43 @@ def dl(pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[List]) -> int:
     return 0
 
 
-def P(frontier):
+def P(frontier: List[List]) -> int:
+    """Short summary:
+        Fonction that compute the perimeter of Omega using standard dl
+
+    Parameters
+    ----------
+    frontier : List[List]
+        Description of parameter `frontier`.
+
+    Returns
+    -------
+    int
+        Description of returned object.
+
+    """
+
     return len(frontier)
 
 
-def H1(w, frontier):
+def H1(w: np.ndarray, frontier: List[List]) -> float:
+
+    """Short summary:
+        Fonction that compute the H1 term in the M-S fonctional.
+
+    Parameters
+    ----------
+    w : np.ndarray
+        Description of parameter `w`.
+    frontier : List[List]
+        Description of parameter `frontier`.
+
+    Returns
+    -------
+    float
+        Description of returned object.
+
+    """
     s = 0
     image_shape = w.shape
     w = np.pad(w, 1, mode="edge")
@@ -72,21 +135,62 @@ def H1(w, frontier):
     return s
 
 
-def norm(w, u):
+def norm(w: np.ndarray, u: np.ndarray) -> float:
+    """Short summary:
+        Fonction that compute the last term of M-S fonctional.
+
+    Parameters
+    ----------
+    w : np.ndarray
+        Description of parameter `w`.
+    u : np.ndarray
+        Description of parameter `u`.
+
+    Returns
+    -------
+    float
+        Description of returned object.
+
+    """
+
     return np.linalg.norm(w - u) ** 2
 
 
-def munford_shah(w, u, frontier):
+def munford_shah(w: np.ndarray, u: np.ndarray, frontier: List[List]) -> float:
+
+    """Short summary:
+        Fonction that compute de M-F fonctional
+
+    Parameters
+    ----------
+    w : np.ndarray
+        Description of parameter `w`.
+    u : np.ndarray
+        Description of parameter `u`.
+    frontier : List[List]
+        Description of parameter `frontier`.
+
+    Returns
+    -------
+    float
+        Description of returned object.
+
+    """
+
     return P(frontier) + H1(w, frontier) + norm(w, -u)
 
 
 def dl2(
-    pixel1: np.ndarray, pixel2: np.ndarray, frontier: List[tuple], w: np.ndarray, dx, dy
+    pixel1: np.ndarray,
+    pixel2: np.ndarray,
+    frontier: List[tuple],
+    w: np.ndarray,
+    dx: np.ndarray,
+    dy: np.ndarray,
 ) -> float:
-
     """Short summary:
 
-       Fonction that compute piece of frontier perimeter.
+       Fonction that compute piece of frontier perimeter with the contribution of the gradient of w.
 
     Parameters
     ----------
@@ -98,6 +202,10 @@ def dl2(
         Description of parameter `frontier`.
     w : np.ndarray
         Description of parameter `w`.
+    dx : np.ndarray
+        Description of parameter `dx`.
+    dy : np.ndarray
+        Description of parameter `dy`.
 
     Returns
     -------
@@ -106,14 +214,10 @@ def dl2(
 
     """
 
-    # Pour le dl nous choisissons la variation total de fonction caracteristique de notre omega (On choisira pour ce cas d'usage la 4-connexité)
-    # if (pixel1 in frontier) and (pixel2 in frontier):
-
     partial_x = w[pixel1[0] + 1, pixel1[1]] - w[pixel1[0], pixel1[1]]
     partial_y = w[pixel1[0], pixel1[1] + 1] - w[pixel1[0], pixel1[1]]
 
     return (np.ones(w.shape) - (dx ** 2 + dy ** 2))[pixel1[0], pixel1[1]]
-    # return 0
 
 
 def H_eps(t: float, eps: float) -> float:
@@ -176,26 +280,61 @@ def H_eps_derivative(t: float, eps: float) -> float:
         return 0
 
 
-def in_frontier(pixel, phi):
+def in_frontier(pixel: List, phi: np.ndarray) -> bool:
+    """Short summary:
+
+       Fonction that return True if a pixel is in the frontier, else False
+
+    Parameters
+    ----------
+    pixel : List
+        Description of parameter `pixel`.
+    phi : np.ndarray
+        Description of parameter `phi`.
+
+    Returns
+    -------
+    bool
+        Description of returned object.
+
+    """
+
     for [i, j] in get_neighbour(pixel, phi):
         if sign(phi[i, j]) == sign(phi[pixel[0], pixel[1]]):
             return False
     return True
 
 
-def grad_x(img, adjoint):
+def grad_x(img: np.ndarray, adjoint: int) -> np.ndarray:
+    """Short summary:
+
+       Fonction that compute the first partial derivative of w.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Description of parameter `img`.
+    adjoint : int
+        Description of parameter `adjoint`.
+
+    Returns
+    -------
+    np.ndarray
+        Description of returned object.
+
+    """
     sx, sy = np.shape(img)
     diff_x = np.copy(img)
 
-    if adjoint == 0:  # calcule Dx img i.e. la composante selon x de grad(img)
+    if adjoint == 0:
         for x in range(sx):
-            if x == sx - 1:  # image périodique en dehors du support
+            if x == sx - 1:
                 xnext = 0
             else:
                 xnext = x + 1
             for y in range(sy):
                 diff_x[x, y] = img[xnext, y] - img[x, y]
-    else:  # ou son adjoint ('adjoint'!=0)
+    else:
         for x in range(sx):
             if x == 0:
                 xprev = sx - 1
@@ -207,7 +346,24 @@ def grad_x(img, adjoint):
     return diff_x
 
 
-def grad_y(img, adjoint):  # pareil que pour x mais sur les colonnes
+def grad_y(img: np.ndarray, adjoint: int) -> np.ndarray:
+    """Short summary:
+
+       Fonction that compute the second partial derivative of w.
+
+    Parameters
+    ----------
+    img : np.ndarray
+        Description of parameter `img`.
+    adjoint : int
+        Description of parameter `adjoint`.
+
+    Returns
+    -------
+    np.ndarray
+        Description of returned object.
+
+    """
     sx, sy = np.shape(img)
     diff_y = np.copy(img)
 
@@ -252,6 +408,9 @@ def grad_w_part(
         Description of parameter `lambda_`.
     mu : float
         Description of parameter `mu`.
+    phi: np.ndarray
+        Description of parameter `phi`.
+
 
     Returns
     -------
@@ -261,7 +420,6 @@ def grad_w_part(
     """
     image_size = w.shape
 
-    # h1_term = np.zeros(image_size)
     data_term = 2 * (w - u)
     tmpx = grad_x(w, 0)
     tmpx1 = grad_x(tmpx, 1)
@@ -278,11 +436,24 @@ def grad_w_part(
     return lambda_ * grad + mu * data_term
 
 
+def get_neighbour(pixel: List, img: np.ndarray) -> List[List]:
+    """Short summary:
+        Fonction that compute the neighborhood of a pixel according to the 4-connexity.
 
+    Parameters
+    ----------
+    pixel : List
+        Description of parameter `pixel`.
+    img : np.ndarray
+        Description of parameter `img`.
 
+    Returns
+    -------
+    List[List]
+        Description of returned object.
 
+    """
 
-def get_neighbour(pixel, img):
     neighborhood = [
         [pixel[0] + 1, pixel[1]],
         [pixel[0], pixel[1] + 1],
@@ -388,7 +559,6 @@ def gradient_descent(
     it: int,
     verbose: bool,
     mode: str,
-    test,
 ) -> Dict[str, Union[np.ndarray, List]]:
 
     """Short summary:
@@ -423,8 +593,7 @@ def gradient_descent(
 
     """
 
-    phi = np.copy(u)  # + np.random.normal(0,1,u.shape)
-    # phi = test
+    phi = np.copy(u)
     # phi = np.random.uniform(-1, 1, u.shape)
     omega = np.argwhere(phi >= 0).tolist()
     frontier = get_frontier_phi(omega=omega, phi=phi)
@@ -444,7 +613,6 @@ def gradient_descent(
 
             omega = np.argwhere(phi >= 0).tolist()
             frontier = get_frontier_phi(omega=omega, phi=phi)
-            print(len(frontier))
 
             norm_grad_phi.append(np.linalg.norm(grad_phi))
             norm_grad_w.append(np.linalg.norm(grad_w))
